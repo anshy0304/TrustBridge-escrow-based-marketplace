@@ -24,7 +24,7 @@ const CheckoutForm = ({ escrowId, onSuccess }) => {
         await api.post(`/escrows/${escrowId}/fund`);
         onSuccess();
       } catch (err) {
-        alert("Funding failed");
+        alert("Funding failed: " + (err.response?.data?.message || err.message));
       }
       setLoading(false);
     }, 1500); // simulate network delay

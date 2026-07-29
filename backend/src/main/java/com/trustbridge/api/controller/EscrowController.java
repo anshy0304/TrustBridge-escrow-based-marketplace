@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/escrows")
 @RequiredArgsConstructor
@@ -19,6 +21,11 @@ public class EscrowController {
     public ResponseEntity<EscrowResponseDto> createTransaction(@RequestBody EscrowRequestDto requestDto) {
         EscrowResponseDto response = escrowService.createTransaction(requestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EscrowResponseDto>> getAllTransactions() {
+        return ResponseEntity.ok(escrowService.getAllTransactions());
     }
 
     @GetMapping("/{id}")

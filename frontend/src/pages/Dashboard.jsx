@@ -12,7 +12,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchMyEscrows = async () => {
       try {
-        const res = await api.get("/admin/escrows"); // Mocking this: in reality we'd have a /escrows/me endpoint
+        const res = await api.get("/escrows");
         // Filter for my escrows
         const myEscrows = res.data.filter(e => e.buyer.id === user.id || e.seller.id === user.id);
         setEscrows(myEscrows);
