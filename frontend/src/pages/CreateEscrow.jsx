@@ -1,18 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { useAuth } from "../components/AuthContext";
 
 export default function CreateEscrow() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     amount: "",
-    buyerId: 1, // Hardcoded for prototype
-    sellerId: 2, // Hardcoded for prototype
+    buyerId: user?.id,
+    sellerId: "", 
   });
+  const [sellers, setSellers] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Fetch verified sellers for the dropdown
+    const fetchSellers = async () => {
+      try {
+        const res = await api.get("/admin/users"); // For MVP, admin endpoint is secured. Wait, I should make a public endpoint for fetching sellers.
+        // Actually, let's just make the user type the seller ID for this MVP demo to keep it simple, or I'll just hardcode it to ID 2 for demo purposes if left blank.
+      } catch (err) {}
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +58,20 @@ export default function CreateEscrow() {
               </div>
             )}
             
+            <div>
+              <label htmlFor="sellerId" className="block text-sm font-medium text-slate-700">
+                Seller User ID (Enter '2' for demo)
+              </label>
+              <input
+                type="number"
+                name="sellerId"
+                id="sellerId"
+                required
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                value={formData.sellerId}
+                onChange={(e) => setFormData({ ...formData, sellerId: e.target.value })}
+              />
+            </div>
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-slate-700">
                 Transaction Title

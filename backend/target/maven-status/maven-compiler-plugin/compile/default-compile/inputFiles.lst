@@ -1,8 +1,13 @@
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\DataSeeder.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\JwtAuthenticationFilter.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\JwtTokenProvider.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\SecurityConfig.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\AdminController.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\AuthController.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\EscrowController.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\UserController.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\AuthRequest.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\AuthResponse.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\EscrowRequestDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\EscrowResponseDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\UserRequestDto.java
@@ -19,5 +24,6 @@ D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\repos
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\service\EscrowService.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\service\MockPaymentGatewayServiceImpl.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\service\PaymentGatewayService.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\service\StripePaymentGatewayServiceImpl.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\service\UserService.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\TrustBridgeApplication.java

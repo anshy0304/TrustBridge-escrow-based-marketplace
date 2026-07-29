@@ -1,7 +1,9 @@
 import { Outlet, Link } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, LogOut } from "lucide-react";
+import { useAuth } from "./AuthContext";
 
 export default function Layout() {
+  const { user, logout } = useAuth();
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}
@@ -36,10 +38,16 @@ export default function Layout() {
                 </Link>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <div className="text-sm font-medium text-slate-500">
-                User ID: 1 (Buyer)
+                {user?.email} ({user?.role})
               </div>
+              <button
+                onClick={logout}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,48 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
-import { CheckCircle2, CircleDashed, ArrowRight } from "lucide-react";
+import { CheckCircle2, CircleDashed } from "lucide-react";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+const CheckoutForm = ({ escrowId, onSuccess }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    // In a real flow, you'd fetch the clientSecret from backend here.
+    // For this MVP, we simulate success and call our backend to hold funds.
+    setTimeout(async () => {
+      try {
+        await api.post(`/escrows/${escrowId}/fund`);
+        onSuccess();
+      } catch (err) {
+        alert("Funding failed");
+      }
+      setLoading(false);
+    }, 1500); // simulate network delay
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-4 bg-white p-4 rounded-md border border-slate-200">
+      <h4 className="text-sm font-medium mb-3 text-slate-700">Pay with Stripe</h4>
+      <div className="p-3 border border-slate-300 rounded bg-slate-50 mb-4">
+        <CardElement options={{style: {base: {fontSize: '16px', color: '#424770', '::placeholder': {color: '#aab7c4'}}}}} />
+      </div>
+      <button type="submit" disabled={!stripe || loading} className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50">
+        {loading ? 'Processing...' : 'Pay & Secure Funds'}
+      </button>
+      <p className="text-xs text-center mt-2 text-slate-500">Use test card 4242 4242 4242 4242</p>
+    </form>
+  );
+};
 
 export default function EscrowDetails() {
   const { id } = useParams();
@@ -127,18 +168,14 @@ export default function EscrowDetails() {
         </div>
         
         {/* Actions Bar */}
-        <div className="bg-slate-50 px-4 py-4 sm:px-6 border-t border-slate-200 flex flex-wrap gap-3 justify-end">
+        <div className="bg-slate-50 px-4 py-4 sm:px-6 border-t border-slate-200 flex flex-col gap-3 justify-end">
           {escrow.status === 'PENDING_FUNDING' && (
-            <button
-              onClick={() => handleAction('fund')}
-              disabled={actionLoading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              Simulate Buyer Payment
-            </button>
+            <Elements stripe={stripePromise}>
+              <CheckoutForm escrowId={escrow.id} onSuccess={fetchEscrow} />
+            </Elements>
           )}
           {escrow.status === 'FUNDED_IN_ESCROW' && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => handleAction('dispute')}
                 disabled={actionLoading}

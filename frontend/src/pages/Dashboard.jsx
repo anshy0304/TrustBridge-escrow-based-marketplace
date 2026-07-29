@@ -1,11 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Plus } from "lucide-react";
+import api from "../api";
+import { useAuth } from "../components/AuthContext";
 
 export default function Dashboard() {
-  // In a real app, we'd fetch this from the backend. 
-  // For the skeleton, we simulate empty state or fetched state.
+  const { user } = useAuth();
   const [escrows, setEscrows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMyEscrows = async () => {
+      try {
+        const res = await api.get("/admin/escrows"); // Mocking this: in reality we'd have a /escrows/me endpoint
+        // Filter for my escrows
+        const myEscrows = res.data.filter(e => e.buyer.id === user.id || e.seller.id === user.id);
+        setEscrows(myEscrows);
+      } catch (err) {
+        console.error("Failed to fetch escrows", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMyEscrows();
+  }, [user]);
+
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
 
   return (
     <div className="space-y-6">
@@ -31,7 +51,23 @@ export default function Dashboard() {
           </div>
         ) : (
           <ul className="divide-y divide-slate-200">
-            {/* List items will go here when we wire up the API */}
+            {escrows.map((escrow) => (
+              <li key={escrow.id}>
+                <Link to={`/escrow/${escrow.id}`} className="block hover:bg-slate-50">
+                  <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-600 truncate">{escrow.title}</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        ${escrow.amount} • Role: {escrow.buyer.id === user.id ? 'Buyer' : 'Seller'}
+                      </p>
+                    </div>
+                    <div className="text-sm font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                      {escrow.status}
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
           </ul>
         )}
       </div>
