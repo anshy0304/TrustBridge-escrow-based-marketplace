@@ -103,7 +103,7 @@ export default function Marketplace() {
                     </div>
                   )}
                   <p className="text-xs text-center mt-2 text-slate-400">
-                    Seller is {product.seller.isVerified ? 'Verified ✓' : 'Unverified'}
+                    Seller is {product.seller.verified ? 'Verified ✓' : 'Unverified'}
                   </p>
                 </div>
               </div>
