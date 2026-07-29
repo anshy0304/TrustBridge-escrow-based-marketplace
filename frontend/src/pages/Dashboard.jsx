@@ -14,7 +14,7 @@ export default function Dashboard() {
       try {
         const res = await api.get("/escrows");
         // Filter for my escrows
-        const myEscrows = res.data.filter(e => e.buyer.id === user.id || e.seller.id === user.id);
+        const myEscrows = res.data.filter(e => e.buyerId === user?.id || e.sellerId === user?.id);
         setEscrows(myEscrows);
       } catch (err) {
         console.error("Failed to fetch escrows", err);
@@ -58,7 +58,7 @@ export default function Dashboard() {
                     <div>
                       <p className="text-sm font-medium text-blue-600 truncate">{escrow.title}</p>
                       <p className="mt-1 text-sm text-slate-500">
-                        ₹{parseFloat(escrow.amount).toFixed(2)} • Role: {escrow.buyer.id === user.id ? 'Buyer' : 'Seller'}
+                        ₹{parseFloat(escrow.amount).toFixed(2)} • Role: {escrow.buyerId === user?.id ? 'Buyer' : 'Seller'}
                       </p>
                     </div>
                     <div className="text-sm font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">
