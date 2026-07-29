@@ -27,7 +27,12 @@ export default function EscrowDetails() {
   const handleAction = async (action) => {
     setActionLoading(true);
     try {
-      await api.post(`/escrows/${id}/${action}`);
+      if (action.startsWith('admin-resolve')) {
+        const queryParams = action.split('?')[1];
+        await api.post(`/admin/escrows/${id}/resolve?${queryParams}`);
+      } else {
+        await api.post(`/escrows/${id}/${action}`);
+      }
       await fetchEscrow(); // refresh data
     } catch (error) {
       alert("Action failed: " + (error.response?.data?.message || "Unknown error"));
@@ -58,7 +63,7 @@ export default function EscrowDetails() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow sm:rounded-lg border border-slate-200 overflow-hidden">
-        <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <div className="px-4 py-5 sm:px-6 flex justify-between items-center bg-slate-50 border-b border-slate-200">
           <div>
             <h3 className="text-lg leading-6 font-medium text-slate-900">
               {escrow.title}
@@ -69,7 +74,36 @@ export default function EscrowDetails() {
           </div>
           <StatusBadge status={escrow.status} />
         </div>
-        <div className="border-t border-slate-200 px-4 py-5 sm:p-0">
+        
+        {/* Admin Dispute Resolution Panel */}
+        {escrow.status === 'IN_DISPUTE' && (
+          <div className="bg-red-50 border-b border-red-200 px-4 py-5 sm:p-6">
+            <h4 className="text-md font-bold text-red-800 flex items-center">
+              <CircleDashed className="mr-2 h-5 w-5" /> Admin Dispute Resolution
+            </h4>
+            <p className="mt-1 text-sm text-red-700 mb-4">
+              This transaction has been flagged for a dispute. As an Admin, you can review evidence and force a resolution.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleAction('admin-resolve?refundBuyer=true')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+              >
+                Force Refund to Buyer
+              </button>
+              <button
+                onClick={() => handleAction('admin-resolve?refundBuyer=false')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+              >
+                Force Payout to Seller
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="px-4 py-5 sm:p-0">
           <dl className="sm:divide-y sm:divide-slate-200">
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-slate-500">Amount</dt>
@@ -104,22 +138,40 @@ export default function EscrowDetails() {
             </button>
           )}
           {escrow.status === 'FUNDED_IN_ESCROW' && (
-            <button
-              onClick={() => handleAction('fulfill')}
-              disabled={actionLoading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              Simulate Seller Fulfillment
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleAction('dispute')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                Raise Dispute
+              </button>
+              <button
+                onClick={() => handleAction('fulfill')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                Simulate Seller Fulfillment
+              </button>
+            </div>
           )}
           {escrow.status === 'FULFILLED' && (
-            <button
-              onClick={() => handleAction('release')}
-              disabled={actionLoading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-            >
-              Buyer Approve & Release Funds
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleAction('dispute')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                Raise Dispute
+              </button>
+              <button
+                onClick={() => handleAction('release')}
+                disabled={actionLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                Buyer Approve & Release Funds
+              </button>
+            </div>
           )}
           {escrow.status === 'RELEASED' && (
             <div className="flex items-center text-green-700 text-sm font-medium">

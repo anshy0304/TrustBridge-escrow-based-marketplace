@@ -11,6 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -41,12 +44,27 @@ public class UserService {
         return mapToDto(user);
     }
 
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserResponseDto verifySeller(Long sellerId) {
+        User user = userRepository.findById(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setVerified(true);
+        return mapToDto(userRepository.save(user));
+    }
+
     private UserResponseDto mapToDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .stripeAccountId(user.getStripeAccountId())
+                .isVerified(user.isVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

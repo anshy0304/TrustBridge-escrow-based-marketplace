@@ -1,5 +1,6 @@
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\DataSeeder.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\SecurityConfig.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\AdminController.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\EscrowController.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\controller\UserController.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\EscrowRequestDto.java

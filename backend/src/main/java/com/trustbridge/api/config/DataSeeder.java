@@ -31,10 +31,19 @@ public class DataSeeder implements CommandLineRunner {
                     .passwordHash(passwordEncoder.encode("password"))
                     .role(Role.SELLER)
                     .stripeAccountId("acct_1MockStripeId")
+                    .isVerified(false)
                     .build();
             userRepository.save(seller);
 
-            System.out.println("🌱 Seeded test Buyer (ID: 1) and test Seller (ID: 2)");
+            User admin = User.builder()
+                    .email("admin@test.com")
+                    .passwordHash(passwordEncoder.encode("password"))
+                    .role(Role.ADMIN)
+                    .isVerified(true)
+                    .build();
+            userRepository.save(admin);
+
+            System.out.println("🌱 Seeded test Buyer (ID: 1), test Seller (ID: 2), and Admin (ID: 3)");
         }
     }
 }

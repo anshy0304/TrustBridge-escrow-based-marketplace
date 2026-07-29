@@ -37,7 +37,12 @@ public class EscrowController {
     }
 
     @PostMapping("/{id}/release")
-    public ResponseEntity<EscrowResponseDto> releaseFunds(@PathVariable Long id) {
+    public ResponseEntity<EscrowResponseDto> releaseEscrow(@PathVariable Long id) {
         return ResponseEntity.ok(escrowService.releaseFunds(id));
+    }
+
+    @PostMapping("/{id}/dispute")
+    public ResponseEntity<EscrowResponseDto> disputeEscrow(@PathVariable Long id) {
+        return ResponseEntity.ok(escrowService.disputeTransaction(id));
     }
 }

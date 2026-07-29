@@ -28,6 +28,12 @@ export default function Layout() {
                 >
                   New Escrow
                 </Link>
+                <Link
+                  to="/admin"
+                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Admin
+                </Link>
               </div>
             </div>
             <div className="flex items-center">

@@ -13,5 +13,6 @@ public class UserResponseDto {
     private String email;
     private Role role;
     private String stripeAccountId;
+    private boolean isVerified;
     private LocalDateTime createdAt;
 }

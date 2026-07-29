@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,10 @@ public class EscrowService {
                 .orElseThrow(() -> new ResourceNotFoundException("Buyer not found"));
         User seller = userRepository.findById(requestDto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
+
+        if (!seller.isVerified()) {
+            throw new InvalidStateException("Cannot create transaction with an unverified seller.");
+        }
 
         BigDecimal platformFee = requestDto.getAmount().multiply(PLATFORM_FEE_PERCENTAGE);
 
@@ -96,6 +102,44 @@ public class EscrowService {
         transaction.setStatus(TransactionStatus.RELEASED);
 
         return mapToDto(escrowRepository.save(transaction));
+    }
+
+    @Transactional
+    public EscrowResponseDto disputeTransaction(Long transactionId) {
+        EscrowTransaction transaction = getTransaction(transactionId);
+        
+        if (transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW && transaction.getStatus() != TransactionStatus.FULFILLED) {
+            throw new InvalidStateException("Transaction cannot be disputed from current state.");
+        }
+        transaction.setStatus(TransactionStatus.IN_DISPUTE);
+        return mapToDto(escrowRepository.save(transaction));
+    }
+
+    @Transactional
+    public EscrowResponseDto resolveDispute(Long transactionId, boolean refundBuyer) {
+        EscrowTransaction transaction = getTransaction(transactionId);
+        
+        if (transaction.getStatus() != TransactionStatus.IN_DISPUTE) {
+            throw new InvalidStateException("Transaction is not in dispute.");
+        }
+
+        if (refundBuyer) {
+            paymentGatewayService.refundPayment(transaction.getStripePaymentIntentId());
+            transaction.setStatus(TransactionStatus.REFUNDED);
+        } else {
+            BigDecimal payoutAmount = transaction.getAmount().subtract(transaction.getPlatformFee());
+            String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "USD");
+            transaction.setStripeTransferId(transferId);
+            transaction.setStatus(TransactionStatus.RELEASED);
+        }
+
+        return mapToDto(escrowRepository.save(transaction));
+    }
+
+    public List<EscrowResponseDto> getAllTransactions() {
+        return escrowRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     public EscrowResponseDto getTransactionDto(Long id) {
