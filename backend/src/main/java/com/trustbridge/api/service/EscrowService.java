@@ -5,9 +5,11 @@ import com.trustbridge.api.dto.EscrowResponseDto;
 import com.trustbridge.api.exception.InvalidStateException;
 import com.trustbridge.api.exception.ResourceNotFoundException;
 import com.trustbridge.api.model.EscrowTransaction;
+import com.trustbridge.api.model.Product;
 import com.trustbridge.api.model.TransactionStatus;
 import com.trustbridge.api.model.User;
 import com.trustbridge.api.repository.EscrowTransactionRepository;
+import com.trustbridge.api.repository.ProductRepository;
 import com.trustbridge.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class EscrowService {
 
     private final EscrowTransactionRepository escrowRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final PaymentGatewayService paymentGatewayService;
 
     // Platform fee percentage (e.g., 5%)
@@ -53,6 +56,29 @@ public class EscrowService {
 
         transaction = escrowRepository.save(transaction);
         return mapToDto(transaction);
+    }
+
+    @Transactional
+    public EscrowResponseDto createTransactionFromProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        if (!product.isActive()) {
+            throw new RuntimeException("Product is no longer available.");
+        }
+        
+        String buyerEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        User buyer = userRepository.findByEmail(buyerEmail)
+                .orElseThrow(() -> new RuntimeException("Buyer not found"));
+                
+        EscrowRequestDto dto = new EscrowRequestDto();
+        dto.setTitle("Purchase: " + product.getTitle());
+        dto.setDescription("Escrow for product ID: " + product.getId());
+        dto.setAmount(product.getPrice());
+        dto.setBuyerId(buyer.getId());
+        dto.setSellerId(product.getSeller().getId());
+        
+        return createTransaction(dto);
     }
 
     @Transactional

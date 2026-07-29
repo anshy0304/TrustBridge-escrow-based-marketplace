@@ -23,6 +23,12 @@ public class EscrowController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/product/{productId}")
+    public ResponseEntity<EscrowResponseDto> createTransactionFromProduct(@PathVariable Long productId) {
+        EscrowResponseDto response = escrowService.createTransactionFromProduct(productId);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<List<EscrowResponseDto>> getAllTransactions() {
         return ResponseEntity.ok(escrowService.getAllTransactions());

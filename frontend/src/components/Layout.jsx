@@ -20,9 +20,15 @@ export default function Layout() {
               <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
                 <Link
                   to="/"
-                  className="border-blue-500 text-slate-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dashboard
+                  Marketplace
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  My Transactions
                 </Link>
                 <Link
                   to="/create"
@@ -30,12 +36,14 @@ export default function Layout() {
                 >
                   New Escrow
                 </Link>
-                <Link
-                  to="/admin"
-                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Admin
-                </Link>
+                {user?.role === 'ADMIN' && (
+                  <Link
+                    to="/admin"
+                    className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    Admin
+                  </Link>
+                )}
               </div>
             </div>
             <div className="flex items-center space-x-4">

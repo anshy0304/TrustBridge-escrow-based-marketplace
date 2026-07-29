@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 
 export default function Login() {
@@ -23,6 +24,12 @@ export default function Login() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
             Sign in to TrustBridge
           </h2>
+          <p className="mt-2 text-center text-sm text-slate-600">
+            Or{" "}
+            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+              create a new account
+            </Link>
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && <div className="text-red-600 text-sm text-center">{error}</div>}
