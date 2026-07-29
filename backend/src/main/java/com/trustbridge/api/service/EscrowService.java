@@ -1,0 +1,124 @@
+package com.trustbridge.api.service;
+
+import com.trustbridge.api.dto.EscrowRequestDto;
+import com.trustbridge.api.dto.EscrowResponseDto;
+import com.trustbridge.api.exception.InvalidStateException;
+import com.trustbridge.api.exception.ResourceNotFoundException;
+import com.trustbridge.api.model.EscrowTransaction;
+import com.trustbridge.api.model.TransactionStatus;
+import com.trustbridge.api.model.User;
+import com.trustbridge.api.repository.EscrowTransactionRepository;
+import com.trustbridge.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+@Service
+@RequiredArgsConstructor
+public class EscrowService {
+
+    private final EscrowTransactionRepository escrowRepository;
+    private final UserRepository userRepository;
+    private final PaymentGatewayService paymentGatewayService;
+
+    // Platform fee percentage (e.g., 5%)
+    private static final BigDecimal PLATFORM_FEE_PERCENTAGE = new BigDecimal("0.05");
+
+    @Transactional
+    public EscrowResponseDto createTransaction(EscrowRequestDto requestDto) {
+        User buyer = userRepository.findById(requestDto.getBuyerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Buyer not found"));
+        User seller = userRepository.findById(requestDto.getSellerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
+
+        BigDecimal platformFee = requestDto.getAmount().multiply(PLATFORM_FEE_PERCENTAGE);
+
+        EscrowTransaction transaction = EscrowTransaction.builder()
+                .title(requestDto.getTitle())
+                .description(requestDto.getDescription())
+                .buyer(buyer)
+                .seller(seller)
+                .amount(requestDto.getAmount())
+                .platformFee(platformFee)
+                .status(TransactionStatus.PENDING_FUNDING)
+                .build();
+
+        transaction = escrowRepository.save(transaction);
+        return mapToDto(transaction);
+    }
+
+    @Transactional
+    public EscrowResponseDto fundTransaction(Long transactionId) {
+        EscrowTransaction transaction = getTransaction(transactionId);
+
+        if (transaction.getStatus() != TransactionStatus.PENDING_FUNDING) {
+            throw new InvalidStateException("Transaction must be in PENDING_FUNDING state to fund.");
+        }
+
+        // Simulate payment success and store payment intent ID
+        String paymentIntentId = paymentGatewayService.createPaymentIntent(transaction.getAmount(), "USD");
+        transaction.setStripePaymentIntentId(paymentIntentId);
+        transaction.setStatus(TransactionStatus.FUNDED_IN_ESCROW);
+
+        return mapToDto(escrowRepository.save(transaction));
+    }
+
+    @Transactional
+    public EscrowResponseDto fulfillTransaction(Long transactionId) {
+        EscrowTransaction transaction = getTransaction(transactionId);
+
+        if (transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW) {
+            throw new InvalidStateException("Transaction must be FUNDED_IN_ESCROW to be fulfilled.");
+        }
+
+        transaction.setStatus(TransactionStatus.FULFILLED);
+        return mapToDto(escrowRepository.save(transaction));
+    }
+
+    @Transactional
+    public EscrowResponseDto releaseFunds(Long transactionId) {
+        EscrowTransaction transaction = getTransaction(transactionId);
+
+        if (transaction.getStatus() != TransactionStatus.FULFILLED && transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW) {
+            throw new InvalidStateException("Transaction cannot be released from current state.");
+        }
+
+        if (transaction.getSeller().getStripeAccountId() == null) {
+            throw new InvalidStateException("Seller does not have a connected payment account.");
+        }
+
+        BigDecimal payoutAmount = transaction.getAmount().subtract(transaction.getPlatformFee());
+        String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "USD");
+        
+        transaction.setStripeTransferId(transferId);
+        transaction.setStatus(TransactionStatus.RELEASED);
+
+        return mapToDto(escrowRepository.save(transaction));
+    }
+
+    public EscrowResponseDto getTransactionDto(Long id) {
+        return mapToDto(getTransaction(id));
+    }
+
+    private EscrowTransaction getTransaction(Long id) {
+        return escrowRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Escrow Transaction not found"));
+    }
+
+    private EscrowResponseDto mapToDto(EscrowTransaction transaction) {
+        return EscrowResponseDto.builder()
+                .id(transaction.getId())
+                .title(transaction.getTitle())
+                .description(transaction.getDescription())
+                .buyerId(transaction.getBuyer().getId())
+                .sellerId(transaction.getSeller().getId())
+                .amount(transaction.getAmount())
+                .platformFee(transaction.getPlatformFee())
+                .status(transaction.getStatus())
+                .createdAt(transaction.getCreatedAt())
+                .updatedAt(transaction.getUpdatedAt())
+                .build();
+    }
+}
