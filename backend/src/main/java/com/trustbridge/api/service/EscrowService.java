@@ -100,6 +100,11 @@ public class EscrowService {
     @Transactional
     public EscrowResponseDto fulfillTransaction(Long transactionId) {
         EscrowTransaction transaction = getTransaction(transactionId);
+        String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!transaction.getSeller().getEmail().equals(currentUserEmail)) {
+            throw new InvalidStateException("Only the seller can confirm delivery.");
+        }
 
         if (transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW) {
             throw new InvalidStateException("Transaction must be FUNDED_IN_ESCROW to be fulfilled.");
@@ -112,6 +117,11 @@ public class EscrowService {
     @Transactional
     public EscrowResponseDto releaseFunds(Long transactionId) {
         EscrowTransaction transaction = getTransaction(transactionId);
+        String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!transaction.getBuyer().getEmail().equals(currentUserEmail)) {
+            throw new InvalidStateException("Only the buyer can approve delivery and release funds.");
+        }
 
         if (transaction.getStatus() != TransactionStatus.FULFILLED && transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW) {
             throw new InvalidStateException("Transaction cannot be released from current state.");
@@ -133,6 +143,11 @@ public class EscrowService {
     @Transactional
     public EscrowResponseDto disputeTransaction(Long transactionId) {
         EscrowTransaction transaction = getTransaction(transactionId);
+        String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!transaction.getBuyer().getEmail().equals(currentUserEmail) && !transaction.getSeller().getEmail().equals(currentUserEmail)) {
+            throw new InvalidStateException("Only the buyer or seller can raise a dispute.");
+        }
         
         if (transaction.getStatus() != TransactionStatus.FUNDED_IN_ESCROW && transaction.getStatus() != TransactionStatus.FULFILLED) {
             throw new InvalidStateException("Transaction cannot be disputed from current state.");

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
 import { CheckCircle2, CircleDashed } from "lucide-react";
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useAuth } from "../components/AuthContext";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -46,6 +46,7 @@ const CheckoutForm = ({ escrowId, onSuccess }) => {
 
 export default function EscrowDetails() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [escrow, setEscrow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -101,6 +102,10 @@ export default function EscrowDetails() {
     );
   };
 
+  const isBuyer = user?.id === escrow.buyerId;
+  const isSeller = user?.id === escrow.sellerId;
+  const isAdmin = user?.role === 'ADMIN';
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow sm:rounded-lg border border-slate-200 overflow-hidden">
@@ -117,7 +122,7 @@ export default function EscrowDetails() {
         </div>
         
         {/* Admin Dispute Resolution Panel */}
-        {escrow.status === 'IN_DISPUTE' && (
+        {escrow.status === 'IN_DISPUTE' && isAdmin && (
           <div className="bg-red-50 border-b border-red-200 px-4 py-5 sm:p-6">
             <h4 className="text-md font-bold text-red-800 flex items-center">
               <CircleDashed className="mr-2 h-5 w-5" /> Admin Dispute Resolution
@@ -169,45 +174,53 @@ export default function EscrowDetails() {
         
         {/* Actions Bar */}
         <div className="bg-slate-50 px-4 py-4 sm:px-6 border-t border-slate-200 flex flex-col gap-3 justify-end">
-          {escrow.status === 'PENDING_FUNDING' && (
+          {escrow.status === 'PENDING_FUNDING' && isBuyer && (
             <Elements stripe={stripePromise}>
               <CheckoutForm escrowId={escrow.id} onSuccess={fetchEscrow} />
             </Elements>
           )}
           {escrow.status === 'FUNDED_IN_ESCROW' && (
             <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => handleAction('dispute')}
-                disabled={actionLoading}
-                className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-              >
-                Raise Dispute
-              </button>
-              <button
-                onClick={() => handleAction('fulfill')}
-                disabled={actionLoading}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                Simulate Seller Fulfillment
-              </button>
+              {(isBuyer || isSeller) && (
+                <button
+                  onClick={() => handleAction('dispute')}
+                  disabled={actionLoading}
+                  className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  Raise Dispute
+                </button>
+              )}
+              {isSeller && (
+                <button
+                  onClick={() => handleAction('fulfill')}
+                  disabled={actionLoading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                >
+                  Confirm Delivery (Fulfill)
+                </button>
+              )}
             </div>
           )}
           {escrow.status === 'FULFILLED' && (
             <div className="flex gap-3">
-              <button
-                onClick={() => handleAction('dispute')}
-                disabled={actionLoading}
-                className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-              >
-                Raise Dispute
-              </button>
-              <button
-                onClick={() => handleAction('release')}
-                disabled={actionLoading}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-              >
-                Buyer Approve & Release Funds
-              </button>
+              {(isBuyer || isSeller) && (
+                <button
+                  onClick={() => handleAction('dispute')}
+                  disabled={actionLoading}
+                  className="inline-flex items-center px-4 py-2 border border-red-200 text-sm font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  Raise Dispute
+                </button>
+              )}
+              {isBuyer && (
+                <button
+                  onClick={() => handleAction('release')}
+                  disabled={actionLoading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                >
+                  Approve Delivery & Release Funds
+                </button>
+              )}
             </div>
           )}
           {escrow.status === 'RELEASED' && (
