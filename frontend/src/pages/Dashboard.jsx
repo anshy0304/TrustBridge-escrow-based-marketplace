@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Plus, Wallet, TrendingUp, AlertCircle } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../components/AuthContext";
 
@@ -27,9 +27,83 @@ export default function Dashboard() {
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
 
+  const isSeller = user?.role === 'SELLER';
+  const sellerEscrows = escrows.filter(e => e.sellerId === user?.id);
+  
+  const totalRevenue = sellerEscrows
+    .filter(e => e.status === 'RELEASED')
+    .reduce((acc, curr) => acc + (parseFloat(curr.amount) - parseFloat(curr.platformFee)), 0);
+    
+  const pendingFunds = sellerEscrows
+    .filter(e => ['FUNDED_IN_ESCROW', 'FULFILLED', 'IN_DISPUTE'].includes(e.status))
+    .reduce((acc, curr) => acc + (parseFloat(curr.amount) - parseFloat(curr.platformFee)), 0);
+    
+  const successfulSales = sellerEscrows.filter(e => e.status === 'RELEASED').length;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {isSeller && (
+        <div className="mb-8">
+          <h2 className="text-lg leading-6 font-medium text-slate-900 mb-4">Wallet & Analytics</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div className="bg-white overflow-hidden shadow sm:rounded-lg border border-slate-200">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <Wallet className="h-6 w-6 text-green-400" aria-hidden="true" />
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-slate-500 truncate">Available Revenue</dt>
+                      <dd>
+                        <div className="text-2xl font-semibold text-slate-900">₹{totalRevenue.toFixed(2)}</div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white overflow-hidden shadow sm:rounded-lg border border-slate-200">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <AlertCircle className="h-6 w-6 text-yellow-400" aria-hidden="true" />
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-slate-500 truncate">Pending in Escrow</dt>
+                      <dd>
+                        <div className="text-2xl font-semibold text-slate-900">₹{pendingFunds.toFixed(2)}</div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white overflow-hidden shadow sm:rounded-lg border border-slate-200">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <TrendingUp className="h-6 w-6 text-blue-400" aria-hidden="true" />
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-slate-500 truncate">Completed Sales</dt>
+                      <dd>
+                        <div className="text-2xl font-semibold text-slate-900">{successfulSales}</div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between border-t border-slate-200 pt-6">
         <h1 className="text-2xl font-semibold text-slate-900">Your Escrows</h1>
         <Link
           to="/create"
