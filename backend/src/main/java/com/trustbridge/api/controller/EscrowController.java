@@ -55,7 +55,9 @@ public class EscrowController {
     }
 
     @PostMapping("/{id}/dispute")
-    public ResponseEntity<EscrowResponseDto> disputeEscrow(@PathVariable Long id) {
-        return ResponseEntity.ok(escrowService.disputeTransaction(id));
+    public ResponseEntity<EscrowResponseDto> disputeEscrow(
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason) {
+        return ResponseEntity.ok(escrowService.disputeTransaction(id, reason));
     }
 }

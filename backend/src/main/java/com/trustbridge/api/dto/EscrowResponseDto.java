@@ -18,6 +18,7 @@ public class EscrowResponseDto {
     private BigDecimal amount;
     private BigDecimal platformFee;
     private TransactionStatus status;
+    private String disputeReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

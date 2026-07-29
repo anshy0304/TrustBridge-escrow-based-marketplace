@@ -141,7 +141,7 @@ public class EscrowService {
     }
 
     @Transactional
-    public EscrowResponseDto disputeTransaction(Long transactionId) {
+    public EscrowResponseDto disputeTransaction(Long transactionId, String reason) {
         EscrowTransaction transaction = getTransaction(transactionId);
         String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -153,6 +153,7 @@ public class EscrowService {
             throw new InvalidStateException("Transaction cannot be disputed from current state.");
         }
         transaction.setStatus(TransactionStatus.IN_DISPUTE);
+        transaction.setDisputeReason(reason);
         return mapToDto(escrowRepository.save(transaction));
     }
 
@@ -202,6 +203,7 @@ public class EscrowService {
                 .amount(transaction.getAmount())
                 .platformFee(transaction.getPlatformFee())
                 .status(transaction.getStatus())
+                .disputeReason(transaction.getDisputeReason())
                 .createdAt(transaction.getCreatedAt())
                 .updatedAt(transaction.getUpdatedAt())
                 .build();

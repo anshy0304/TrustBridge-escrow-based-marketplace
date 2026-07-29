@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../api";
-import { CheckCircle2, CircleDashed } from "lucide-react";
+import { CheckCircle2, CircleDashed, AlertTriangle } from "lucide-react";
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useAuth } from "../components/AuthContext";
@@ -68,13 +69,20 @@ export default function EscrowDetails() {
   }, [id]);
 
   const handleAction = async (action) => {
+    let queryParams = "";
+    if (action === 'dispute') {
+      const reason = window.prompt("Please briefly explain why you are raising a dispute:");
+      if (!reason) return; // Cancelled
+      queryParams = `?reason=${encodeURIComponent(reason)}`;
+    }
+
     setActionLoading(true);
     try {
       if (action.startsWith('admin-resolve')) {
-        const queryParams = action.split('?')[1];
-        await api.post(`/admin/escrows/${id}/resolve?${queryParams}`);
+        const adminParams = action.split('?')[1];
+        await api.post(`/admin/escrows/${id}/resolve?${adminParams}`);
       } else {
-        await api.post(`/escrows/${id}/${action}`);
+        await api.post(`/escrows/${id}/${action}${queryParams}`);
       }
       await fetchEscrow(); // refresh data
     } catch (error) {
@@ -131,6 +139,10 @@ export default function EscrowDetails() {
             <p className="mt-1 text-sm text-red-700 mb-4">
               This transaction has been flagged for a dispute. As an Admin, you can review evidence and force a resolution.
             </p>
+            <div className="mb-4 p-3 bg-white border border-red-100 rounded-md">
+              <strong className="text-sm text-red-800 block mb-1">Dispute Reason:</strong>
+              <span className="text-sm text-slate-700">{escrow.disputeReason || "No reason provided."}</span>
+            </div>
             <div className="flex gap-3">
               <button
                 onClick={() => handleAction('admin-resolve?refundBuyer=true')}
@@ -146,6 +158,21 @@ export default function EscrowDetails() {
               >
                 Force Payout to Seller
               </button>
+            </div>
+          </div>
+        )}
+
+        {escrow.status === 'IN_DISPUTE' && !isAdmin && (
+          <div className="bg-red-50 border-b border-red-200 px-4 py-5 sm:p-6">
+            <h4 className="text-md font-bold text-red-800 flex items-center">
+              <AlertTriangle className="mr-2 h-5 w-5" /> Transaction in Dispute
+            </h4>
+            <p className="mt-1 text-sm text-red-700 mb-2">
+              The Admin team is currently reviewing this transaction.
+            </p>
+            <div className="p-3 bg-white border border-red-100 rounded-md">
+              <strong className="text-sm text-red-800 block mb-1">Dispute Reason:</strong>
+              <span className="text-sm text-slate-700">{escrow.disputeReason || "No reason provided."}</span>
             </div>
           </div>
         )}

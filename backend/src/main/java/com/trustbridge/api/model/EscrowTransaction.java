@@ -29,6 +29,9 @@ public class EscrowTransaction {
     @Column(length = 1000)
     private String description;
 
+    @Column(length = 1000)
+    private String disputeReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
