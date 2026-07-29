@@ -40,9 +40,8 @@ public class User implements UserDetails {
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean isVerified = false;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isVerified;
 
     @CreationTimestamp
     @Column(updatable = false)
