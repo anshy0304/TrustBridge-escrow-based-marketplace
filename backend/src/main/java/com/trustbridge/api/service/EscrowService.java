@@ -64,7 +64,7 @@ public class EscrowService {
         }
 
         // Simulate payment success and store payment intent ID
-        String paymentIntentId = paymentGatewayService.createPaymentIntent(transaction.getAmount(), "USD");
+        String paymentIntentId = paymentGatewayService.createPaymentIntent(transaction.getAmount(), "INR");
         transaction.setStripePaymentIntentId(paymentIntentId);
         transaction.setStatus(TransactionStatus.FUNDED_IN_ESCROW);
 
@@ -96,7 +96,7 @@ public class EscrowService {
         }
 
         BigDecimal payoutAmount = transaction.getAmount().subtract(transaction.getPlatformFee());
-        String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "USD");
+        String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "INR");
         
         transaction.setStripeTransferId(transferId);
         transaction.setStatus(TransactionStatus.RELEASED);
@@ -128,7 +128,7 @@ public class EscrowService {
             transaction.setStatus(TransactionStatus.REFUNDED);
         } else {
             BigDecimal payoutAmount = transaction.getAmount().subtract(transaction.getPlatformFee());
-            String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "USD");
+            String transferId = paymentGatewayService.transferFunds(transaction.getSeller().getStripeAccountId(), payoutAmount, "INR");
             transaction.setStripeTransferId(transferId);
             transaction.setStatus(TransactionStatus.RELEASED);
         }

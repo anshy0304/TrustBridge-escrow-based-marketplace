@@ -39,6 +39,7 @@ public class StripePaymentGatewayServiceImpl implements PaymentGatewayService {
                     .setCaptureMethod(PaymentIntentCreateParams.CaptureMethod.MANUAL) // Hold funds
                     .setPaymentMethod("pm_card_visa") // In a real app, this comes from frontend
                     .setConfirm(true) // For testing, auto confirm
+                    .setReturnUrl("http://localhost:5173/dashboard")
                     .build();
 
             PaymentIntent paymentIntent = PaymentIntent.create(params);

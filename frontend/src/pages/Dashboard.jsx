@@ -58,7 +58,7 @@ export default function Dashboard() {
                     <div>
                       <p className="text-sm font-medium text-blue-600 truncate">{escrow.title}</p>
                       <p className="mt-1 text-sm text-slate-500">
-                        ${escrow.amount} • Role: {escrow.buyer.id === user.id ? 'Buyer' : 'Seller'}
+                        ₹{parseFloat(escrow.amount).toFixed(2)} • Role: {escrow.buyer.id === user.id ? 'Buyer' : 'Seller'}
                       </p>
                     </div>
                     <div className="text-sm font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">

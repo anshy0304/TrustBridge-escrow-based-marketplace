@@ -149,13 +149,13 @@ export default function EscrowDetails() {
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-slate-500">Amount</dt>
               <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-mono font-medium">
-                ${parseFloat(escrow.amount).toFixed(2)}
+                ₹{parseFloat(escrow.amount).toFixed(2)}
               </dd>
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-slate-500">Platform Fee</dt>
               <dd className="mt-1 text-sm text-slate-500 sm:mt-0 sm:col-span-2 font-mono">
-                ${parseFloat(escrow.platformFee).toFixed(2)}
+                ₹{parseFloat(escrow.platformFee).toFixed(2)}
               </dd>
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
