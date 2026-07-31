@@ -17,7 +17,6 @@ com\trustbridge\api\config\SecurityConfig.class
 com\trustbridge\api\model\User.class
 com\trustbridge\api\dto\EscrowResponseDto$EscrowResponseDtoBuilder.class
 com\trustbridge\api\repository\EscrowTransactionRepository.class
-com\trustbridge\api\config\DataSeeder.class
 com\trustbridge\api\service\UserService.class
 com\trustbridge\api\exception\GlobalExceptionHandler.class
 com\trustbridge\api\model\EscrowTransaction.class

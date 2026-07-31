@@ -71,6 +71,10 @@ public class EscrowService {
         User buyer = userRepository.findByEmail(buyerEmail)
                 .orElseThrow(() -> new RuntimeException("Buyer not found"));
                 
+        if (buyer.getRole() != com.trustbridge.api.model.Role.BUYER) {
+            throw new InvalidStateException("Only users with a BUYER account can purchase products.");
+        }
+                
         EscrowRequestDto dto = new EscrowRequestDto();
         dto.setTitle("Purchase: " + product.getTitle());
         dto.setDescription("Escrow for product ID: " + product.getId());

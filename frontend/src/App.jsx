@@ -4,7 +4,6 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Marketplace from "./pages/Marketplace";
 import CreateProduct from "./pages/CreateProduct";
-import CreateEscrow from "./pages/CreateEscrow";
 import EscrowDetails from "./pages/EscrowDetails";
 import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
@@ -33,7 +32,6 @@ function AppRoutes() {
         <Route index element={<Marketplace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="products/new" element={<ProtectedRoute requireAdmin={false}><CreateProduct /></ProtectedRoute>} />
-        <Route path="create" element={<CreateEscrow />} />
         <Route path="escrow/:id" element={<EscrowDetails />} />
         <Route path="admin" element={<ProtectedRoute requireAdmin={true}><AdminDashboard /></ProtectedRoute>} />
       </Route>

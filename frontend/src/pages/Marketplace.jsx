@@ -89,7 +89,11 @@ export default function Marketplace() {
                 <div>
                   <p className="text-xl font-bold text-slate-900 mb-4">₹{parseFloat(product.price).toFixed(2)}</p>
                   
-                  {user?.id !== product.seller.id ? (
+                  {user?.id === product.seller.id ? (
+                    <div className="text-center py-2 bg-slate-100 text-slate-500 rounded-md text-sm font-medium border border-slate-200">
+                      Your Listing
+                    </div>
+                  ) : user?.role === 'BUYER' ? (
                     <button
                       onClick={() => handleBuyNow(product.id)}
                       disabled={buying === product.id}
@@ -99,7 +103,7 @@ export default function Marketplace() {
                     </button>
                   ) : (
                     <div className="text-center py-2 bg-slate-100 text-slate-500 rounded-md text-sm font-medium border border-slate-200">
-                      Your Listing
+                      Only Buyers can purchase
                     </div>
                   )}
                   <p className="text-xs text-center mt-2 text-slate-400">
