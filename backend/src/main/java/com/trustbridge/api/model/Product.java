@@ -40,7 +40,12 @@ public class Product {
     private User seller;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean active = true;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean inStock = true;
 
     @CreationTimestamp
     @Column(updatable = false)

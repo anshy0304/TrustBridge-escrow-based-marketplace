@@ -109,13 +109,19 @@ export default function Marketplace() {
                       <Edit2 className="mr-2 h-4 w-4" /> Edit Listing
                     </button>
                   ) : user?.role === 'BUYER' ? (
-                    <button
-                      onClick={() => handleBuyNow(product.id)}
-                      disabled={buying === product.id}
-                      className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
-                    >
-                      {buying === product.id ? 'Processing...' : 'Buy with Escrow'}
-                    </button>
+                    product.inStock === false ? (
+                      <div className="w-full text-center py-2 bg-red-50 text-red-600 rounded-md text-sm font-medium border border-red-200">
+                        Out of Stock
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleBuyNow(product.id)}
+                        disabled={buying === product.id}
+                        className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+                      >
+                        {buying === product.id ? 'Processing...' : 'Buy with Escrow'}
+                      </button>
+                    )
                   ) : null}
                   <p className="text-xs text-center mt-2 text-slate-400">
                     Seller is {product.seller.verified ? 'Verified ✓' : 'Unverified'}

@@ -41,6 +41,7 @@ public class ProductService {
                 .imageUrl(requestDto.getImageUrl())
                 .seller(seller)
                 .active(true)
+                .inStock(requestDto.getInStock() != null ? requestDto.getInStock() : true)
                 .build();
 
         return mapToDto(productRepository.save(product));
@@ -55,12 +56,20 @@ public class ProductService {
             throw new RuntimeException("You can only edit your own products.");
         }
 
-        // The user requested to edit only price and description
+        if (requestDto.getTitle() != null) {
+            product.setTitle(requestDto.getTitle());
+        }
         if (requestDto.getDescription() != null) {
             product.setDescription(requestDto.getDescription());
         }
         if (requestDto.getPrice() != null) {
             product.setPrice(requestDto.getPrice());
+        }
+        if (requestDto.getImageUrl() != null) {
+            product.setImageUrl(requestDto.getImageUrl());
+        }
+        if (requestDto.getInStock() != null) {
+            product.setInStock(requestDto.getInStock());
         }
         
         return mapToDto(productRepository.save(product));
@@ -129,6 +138,7 @@ public class ProductService {
                 .imageUrl(product.getImageUrl())
                 .seller(sellerDto)
                 .active(product.isActive())
+                .inStock(product.isInStock())
                 .purchaseCount(count)
                 .createdAt(product.getCreatedAt())
                 .build();
