@@ -114,7 +114,7 @@ export default function Marketplace() {
                   <p className="text-xs text-center mt-2 text-slate-400">
                     Seller is {product.seller.verified ? 'Verified ✓' : 'Unverified'}
                   </p>
-                  {user?.id === product.seller.id && (
+                  {(user?.id === product.seller.id || user?.role === 'ADMIN') && (
                     <button
                       onClick={() => setSelectedProduct(product)}
                       className="w-full mt-3 inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50"
