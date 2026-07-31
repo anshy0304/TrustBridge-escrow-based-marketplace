@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # The env variables for vite need to be present at build time
 # If your backend is running in docker-compose, this will point to localhost if accessed locally
 # In production on AWS, you might want to use a relative URL like /api 
