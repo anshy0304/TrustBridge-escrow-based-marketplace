@@ -12,6 +12,7 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # If your backend is running in docker-compose, this will point to localhost if accessed locally
 # In production on AWS, you might want to use a relative URL like /api 
 # For now, let's inject it if needed or use the default local one
+ENV NODE_OPTIONS="--max-old-space-size=512"
 RUN npm run build
 
 # Serve stage

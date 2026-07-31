@@ -6,6 +6,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 COPY src ./src
 # Build the application
+ENV MAVEN_OPTS="-Xmx256m"
 RUN mvn clean package -DskipTests
 
 # Run stage
