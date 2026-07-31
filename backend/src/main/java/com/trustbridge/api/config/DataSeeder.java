@@ -22,7 +22,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() == 0) {
+        if (userRepository.findByEmail("admin@test.com").isEmpty()) {
             String password = passwordEncoder.encode("password123");
 
             User admin = User.builder()
