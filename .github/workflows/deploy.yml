@@ -6,12 +6,34 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend Image
+        run: |
+          cd backend
+          docker build -t ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/backend:latest .
+          docker push ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/backend:latest
+
+      - name: Build and push Frontend Image
+        run: |
+          cd frontend
+          docker build --build-arg VITE_API_BASE_URL=/api/v1 -t ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/frontend:latest .
+          docker push ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/frontend:latest
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -20,14 +42,18 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Navigate to project directory (assuming it's cloned in home dir)
+            # Navigate to project directory
             cd ~/TrustBridge-escrow-based-marketplace
             
-            # Pull the latest changes from the main branch
+            # Pull the latest compose file changes
             git pull origin main
             
-            # Rebuild and restart the Docker containers in detached mode
-            docker compose -f docker-compose.yml up -d --build
+            # Pull the pre-built images from GHCR
+            docker pull ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/backend:latest
+            docker pull ghcr.io/anshy0304/trustbridge-escrow-based-marketplace/frontend:latest
             
-            # Prune old dangling images to save space
+            # Restart the containers using the new production compose file
+            docker compose -f docker-compose.prod.yml up -d
+            
+            # Prune old images
             docker image prune -f
