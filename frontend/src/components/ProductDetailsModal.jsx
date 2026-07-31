@@ -68,7 +68,7 @@ export default function ProductDetailsModal({ product, user, onClose }) {
                 </div>
               </div>
 
-              {(user?.id === product?.seller?.id || user?.role === 'ADMIN') && product?.purchaseCount > 0 && (
+              {(user?.id === product?.seller?.id || user?.role === 'ADMIN') && (
                 <div className="mt-4">
                   <h4 className="text-lg font-medium text-slate-900 mb-2">Purchase History</h4>
                   {loading ? (
