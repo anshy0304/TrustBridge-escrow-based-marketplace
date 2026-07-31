@@ -24,12 +24,14 @@ export default function Layout() {
                 >
                   Marketplace
                 </Link>
-                <Link
-                  to="/dashboard"
-                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  My Transactions
-                </Link>
+                {user?.role !== 'ADMIN' && (
+                  <Link
+                    to="/dashboard"
+                    className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    My Transactions
+                  </Link>
+                )}
 
                 {user?.role === 'ADMIN' && (
                   <Link
