@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import api from "../api";
 import { CheckCircle2, CircleDashed, AlertTriangle } from "lucide-react";
 import { loadStripe } from '@stripe/stripe-js';
@@ -41,7 +40,6 @@ const CheckoutForm = ({ escrowId, onSuccess }) => {
       <button type="submit" disabled={!stripe || loading} className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50">
         {loading ? 'Processing...' : 'Pay & Secure Funds'}
       </button>
-      <p className="text-xs text-center mt-2 text-slate-500">Use test card 4242 4242 4242 4242</p>
     </form>
   );
 };

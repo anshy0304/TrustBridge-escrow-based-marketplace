@@ -21,8 +21,7 @@ export default function CreateEscrow() {
     // Fetch verified sellers for the dropdown
     const fetchSellers = async () => {
       try {
-        const res = await api.get("/admin/users"); // For MVP, admin endpoint is secured. Wait, I should make a public endpoint for fetching sellers.
-        // Actually, let's just make the user type the seller ID for this MVP demo to keep it simple, or I'll just hardcode it to ID 2 for demo purposes if left blank.
+        const res = await api.get("/admin/users");
       } catch (err) {}
     };
   }, []);
@@ -60,7 +59,7 @@ export default function CreateEscrow() {
             
             <div>
               <label htmlFor="sellerId" className="block text-sm font-medium text-slate-700">
-                Seller User ID (Enter '2' for demo)
+                Seller User ID
               </label>
               <input
                 type="number"
@@ -89,11 +88,11 @@ export default function CreateEscrow() {
 
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-slate-700">
-                Amount (USD)
+                Amount (₹)
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-slate-500 sm:text-sm">$</span>
+                  <span className="text-slate-500 sm:text-sm">₹</span>
                 </div>
                 <input
                   type="number"
