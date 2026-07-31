@@ -30,12 +30,7 @@ export default function Layout() {
                 >
                   My Transactions
                 </Link>
-                <Link
-                  to="/create"
-                  className="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  New Escrow
-                </Link>
+
                 {user?.role === 'ADMIN' && (
                   <Link
                     to="/admin"

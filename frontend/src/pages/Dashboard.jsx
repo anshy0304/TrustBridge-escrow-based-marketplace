@@ -113,7 +113,7 @@ export default function Dashboard() {
             <FileText className="mx-auto h-12 w-12 text-slate-300" />
             <h3 className="mt-2 text-sm font-medium text-slate-900">No transactions</h3>
             <p className="mt-1 text-sm text-slate-500">
-              Get started by creating a new escrow transaction.
+              Visit the Marketplace to purchase a product and initiate a secure escrow.
             </p>
           </div>
         ) : (
