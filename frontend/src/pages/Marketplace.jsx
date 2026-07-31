@@ -110,7 +110,7 @@ export default function Marketplace() {
                     >
                       {buying === product.id ? 'Processing...' : 'Buy with Escrow'}
                     </button>
-                  )}
+                  ) : null}
                   <p className="text-xs text-center mt-2 text-slate-400">
                     Seller is {product.seller.isVerified ? 'Verified ✓' : 'Unverified'}
                   </p>
