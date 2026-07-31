@@ -35,7 +35,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE_URL=http://172.31.6.174:8080/api/v1
+        - VITE_API_BASE_URL=http://43.204.100.27:8080/api/v1
     container_name: trustbridge-frontend
     ports:
       - "80:80"
