@@ -62,7 +62,14 @@ public class ProductService {
     }
 
     public List<PurchaseHistoryDto> getProductPurchases(Long productId) {
-        return escrowRepository.findByProductId(productId).stream().map(tx -> {
+        List<TransactionStatus> validStatuses = List.of(
+            TransactionStatus.FUNDED_IN_ESCROW, 
+            TransactionStatus.FULFILLED, 
+            TransactionStatus.RELEASED, 
+            TransactionStatus.IN_DISPUTE,
+            TransactionStatus.REFUNDED // Keep refunded in the history log, just don't count it in the total
+        );
+        return escrowRepository.findByProductIdAndStatusIn(productId, validStatuses).stream().map(tx -> {
             User buyer = tx.getBuyer();
             UserResponseDto buyerDto = UserResponseDto.builder()
                     .id(buyer.getId())

@@ -15,4 +15,5 @@ public interface EscrowTransactionRepository extends JpaRepository<EscrowTransac
     List<EscrowTransaction> findByProductId(Long productId);
     int countByProductId(Long productId);
     int countByProductIdAndStatusIn(Long productId, List<TransactionStatus> statuses);
+    List<EscrowTransaction> findByProductIdAndStatusIn(Long productId, List<TransactionStatus> statuses);
 }
