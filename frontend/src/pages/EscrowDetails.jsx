@@ -141,7 +141,7 @@ export default function EscrowDetails() {
               <strong className="text-sm text-red-800 block mb-1">Dispute Reason:</strong>
               <span className="text-sm text-slate-700">{escrow.disputeReason || "No reason provided."}</span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => handleAction('admin-resolve?refundBuyer=true')}
                 disabled={actionLoading}
@@ -206,7 +206,7 @@ export default function EscrowDetails() {
             </Elements>
           )}
           {escrow.status === 'FUNDED_IN_ESCROW' && (
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
               {(isBuyer || isSeller) && (
                 <button
                   onClick={() => handleAction('dispute')}
@@ -228,7 +228,7 @@ export default function EscrowDetails() {
             </div>
           )}
           {escrow.status === 'FULFILLED' && (
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               {(isBuyer || isSeller) && (
                 <button
                   onClick={() => handleAction('dispute')}

@@ -47,8 +47,8 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-slate-900">Admin Command Center</h1>
       </div>
 
-      <div className="border-b border-slate-200">
-        <nav className="-mb-px flex space-x-8">
+      <div className="border-b border-slate-200 overflow-x-auto">
+        <nav className="-mb-px flex space-x-8 px-2 sm:px-0">
           <button
             onClick={() => setActiveTab("escrows")}
             className={`${
@@ -78,8 +78,8 @@ export default function AdminDashboard() {
             {escrows.map((escrow) => (
               <li key={escrow.id}>
                 <Link to={`/escrow/${escrow.id}`} className="block hover:bg-slate-50">
-                  <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
-                    <div>
+                  <div className="px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between">
+                    <div className="mb-2 sm:mb-0">
                       <p className="text-sm font-medium text-indigo-600 truncate">{escrow.title}</p>
                       <p className="mt-1 text-sm text-slate-500">ID: #{escrow.id} • ${escrow.amount}</p>
                     </div>
@@ -107,12 +107,12 @@ export default function AdminDashboard() {
         <div className="bg-white shadow overflow-hidden sm:rounded-md border border-slate-200">
           <ul className="divide-y divide-slate-200">
             {users.map((user) => (
-              <li key={user.id} className="px-4 py-4 sm:px-6 flex items-center justify-between hover:bg-slate-50 cursor-pointer" onClick={() => setSelectedUser(user)}>
+              <li key={user.id} className="px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-slate-50 cursor-pointer" onClick={() => setSelectedUser(user)}>
                 <div>
                   <p className="text-sm font-medium text-slate-900">{user.email}</p>
                   <p className="text-xs text-slate-500">ID: {user.id} • Role: {user.role}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 sm:mt-0 mt-2">
                   {user.role === "SELLER" && !user.verified ? (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleVerifySeller(user.id); }}
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedUser(null)} className="text-slate-400 hover:text-slate-500 font-bold text-xl">&times;</button>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div className="bg-slate-50 p-3 rounded border border-slate-200">
                   <span className="block text-xs text-slate-500">User ID</span>
                   <strong className="text-sm">{selectedUser.id}</strong>

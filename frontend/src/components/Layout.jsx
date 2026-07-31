@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Outlet, Link } from "react-router-dom";
-import { ShieldCheck, LogOut } from "lucide-react";
+import { ShieldCheck, LogOut, Menu, X } from "lucide-react";
 import { useAuth } from "./AuthContext";
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}
@@ -43,13 +46,71 @@ export default function Layout() {
                 )}
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-4">
               <div className="text-sm font-medium text-slate-500">
                 {user?.email} ({user?.role})
               </div>
               <button
                 onClick={logout}
                 className="text-slate-400 hover:text-slate-600"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
+            {/* Mobile menu button */}
+            <div className="flex items-center sm:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              >
+                <span className="sr-only">Open main menu</span>
+                {isMobileMenuOpen ? (
+                  <X className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div className={`sm:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+          <div className="pt-2 pb-3 space-y-1">
+            <Link
+              to="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+            >
+              Marketplace
+            </Link>
+            {user?.role !== 'ADMIN' && (
+              <Link
+                to="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+              >
+                My Transactions
+              </Link>
+            )}
+            {user?.role === 'ADMIN' && (
+              <Link
+                to="/admin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+          <div className="pt-4 pb-3 border-t border-slate-200">
+            <div className="flex items-center px-4 justify-between">
+              <div className="text-base font-medium text-slate-800">
+                {user?.email} ({user?.role})
+              </div>
+              <button
+                onClick={logout}
+                className="flex items-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none"
               >
                 <LogOut className="h-5 w-5" />
               </button>

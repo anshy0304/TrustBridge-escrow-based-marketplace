@@ -121,8 +121,8 @@ export default function Dashboard() {
             {escrows.map((escrow) => (
               <li key={escrow.id}>
                 <Link to={`/escrow/${escrow.id}`} className="block hover:bg-slate-50">
-                  <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
-                    <div>
+                  <div className="px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between">
+                    <div className="mb-2 sm:mb-0">
                       <p className="text-sm font-medium text-blue-600 truncate">{escrow.title}</p>
                       <p className="mt-1 text-sm text-slate-500">
                         ₹{parseFloat(escrow.amount).toFixed(2)} • Role: {escrow.buyerId === user?.id ? 'Buyer' : 'Seller'}
