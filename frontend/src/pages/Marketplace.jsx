@@ -130,6 +130,7 @@ export default function Marketplace() {
       {selectedProduct && (
         <ProductDetailsModal
           product={selectedProduct}
+          user={user}
           onClose={() => setSelectedProduct(null)}
         />
       )}

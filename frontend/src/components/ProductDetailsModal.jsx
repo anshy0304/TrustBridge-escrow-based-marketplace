@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import api from "../api";
 
-export default function ProductDetailsModal({ product, onClose }) {
+export default function ProductDetailsModal({ product, user, onClose }) {
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,7 +68,7 @@ export default function ProductDetailsModal({ product, onClose }) {
                 </div>
               </div>
 
-              {product?.purchaseCount > 0 && (
+              {(user?.id === product?.seller?.id || user?.role === 'ADMIN') && product?.purchaseCount > 0 && (
                 <div className="mt-4">
                   <h4 className="text-lg font-medium text-slate-900 mb-2">Purchase History</h4>
                   {loading ? (
