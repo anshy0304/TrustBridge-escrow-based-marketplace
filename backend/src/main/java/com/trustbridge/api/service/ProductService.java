@@ -46,6 +46,26 @@ public class ProductService {
         return mapToDto(productRepository.save(product));
     }
 
+    public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        Product product = getProductById(productId);
+
+        if (!product.getSeller().getId().equals(user.getId())) {
+            throw new RuntimeException("You can only edit your own products.");
+        }
+
+        // The user requested to edit only price and description
+        if (requestDto.getDescription() != null) {
+            product.setDescription(requestDto.getDescription());
+        }
+        if (requestDto.getPrice() != null) {
+            product.setPrice(requestDto.getPrice());
+        }
+        
+        return mapToDto(productRepository.save(product));
+    }
+
     public List<ProductResponseDto> getActiveProducts() {
         return productRepository.findByActiveTrueOrderByCreatedAtDesc()
                 .stream()

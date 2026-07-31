@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, Plus } from "lucide-react";
+import { ShoppingBag, Plus, Edit2 } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../components/AuthContext";
 import ProductDetailsModal from "../components/ProductDetailsModal";
+import EditProductModal from "../components/EditProductModal";
 
 export default function Marketplace() {
   const { user } = useAuth();
@@ -12,18 +13,20 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [buying, setBuying] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get("/products");
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await api.get("/products");
-        setProducts(res.data);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProducts();
   }, []);
 
@@ -99,9 +102,12 @@ export default function Marketplace() {
                   <p className="text-xl font-bold text-slate-900 mb-4">₹{parseFloat(product.price).toFixed(2)}</p>
                   
                   {user?.id === product.seller.id ? (
-                    <div className="text-center py-2 bg-slate-100 text-slate-500 rounded-md text-sm font-medium border border-slate-200">
-                      Your Listing
-                    </div>
+                    <button
+                      onClick={() => setEditingProduct(product)}
+                      className="w-full inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 bg-white hover:bg-slate-50"
+                    >
+                      <Edit2 className="mr-2 h-4 w-4" /> Edit Listing
+                    </button>
                   ) : user?.role === 'BUYER' ? (
                     <button
                       onClick={() => handleBuyNow(product.id)}
@@ -134,6 +140,17 @@ export default function Marketplace() {
           product={selectedProduct}
           user={user}
           onClose={() => setSelectedProduct(null)}
+        />
+      )}
+
+      {editingProduct && (
+        <EditProductModal
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onSuccess={() => {
+            setEditingProduct(null);
+            fetchProducts();
+          }}
         />
       )}
     </div>
