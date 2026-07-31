@@ -10,6 +10,7 @@ import com.trustbridge.api.repository.ProductRepository;
 import com.trustbridge.api.repository.UserRepository;
 import com.trustbridge.api.repository.EscrowTransactionRepository;
 import com.trustbridge.api.dto.PurchaseHistoryDto;
+import com.trustbridge.api.model.TransactionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -87,10 +88,10 @@ public class ProductService {
                 .role(seller.getRole())
                 .isVerified(seller.isVerified())
                 .build();
-
         int count = 0;
         if (product.getId() != null) {
-            count = escrowRepository.countByProductId(product.getId());
+            count = escrowRepository.countByProductIdAndStatusIn(product.getId(), 
+                List.of(TransactionStatus.FUNDED_IN_ESCROW, TransactionStatus.FULFILLED, TransactionStatus.RELEASED, TransactionStatus.IN_DISPUTE));
         }
 
         return ProductResponseDto.builder()
