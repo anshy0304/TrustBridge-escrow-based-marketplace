@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import org.springframework.context.annotation.Primary;
+
 @Service
+@Primary
 public class MockPaymentGatewayServiceImpl implements PaymentGatewayService {
 
     @Override

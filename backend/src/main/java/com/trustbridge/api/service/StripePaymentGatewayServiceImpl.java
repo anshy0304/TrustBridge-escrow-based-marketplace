@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
-@Primary
 public class StripePaymentGatewayServiceImpl implements PaymentGatewayService {
 
     @Value("${stripe.api.secret-key}")
