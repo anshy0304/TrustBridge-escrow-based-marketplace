@@ -13,7 +13,7 @@ export default function Login() {
     try {
       await login(email, password);
     } catch (err) {
-      setError("Invalid credentials. For MVP demo, use buyer@test.com / password");
+      setError("Invalid credentials. Please try again.");
     }
   };
 
