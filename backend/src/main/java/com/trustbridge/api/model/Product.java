@@ -43,7 +43,7 @@ public class Product {
     @Builder.Default
     private boolean active = true;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default true")
     @Builder.Default
     private boolean inStock = true;
 
