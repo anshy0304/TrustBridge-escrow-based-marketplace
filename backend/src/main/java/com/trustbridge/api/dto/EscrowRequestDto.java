@@ -9,5 +9,6 @@ public class EscrowRequestDto {
     private String description;
     private Long buyerId;
     private Long sellerId;
+    private Long productId;
     private BigDecimal amount;
 }

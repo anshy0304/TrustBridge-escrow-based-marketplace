@@ -1,3 +1,4 @@
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\DataSeeder.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\JwtAuthenticationFilter.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\JwtTokenProvider.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\config\SecurityConfig.java
@@ -12,6 +13,7 @@ D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\E
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\EscrowResponseDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\ProductRequestDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\ProductResponseDto.java
+D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\PurchaseHistoryDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\RegisterRequest.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\UserRequestDto.java
 D:\Personal-Projects\TrustBridge\backend\src\main\java\com\trustbridge\api\dto\UserResponseDto.java

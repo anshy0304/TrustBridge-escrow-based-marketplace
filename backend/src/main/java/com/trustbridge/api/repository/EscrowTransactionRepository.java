@@ -10,4 +10,6 @@ import java.util.List;
 public interface EscrowTransactionRepository extends JpaRepository<EscrowTransaction, Long> {
     List<EscrowTransaction> findByBuyerId(Long buyerId);
     List<EscrowTransaction> findBySellerId(Long sellerId);
+    List<EscrowTransaction> findByProductId(Long productId);
+    int countByProductId(Long productId);
 }

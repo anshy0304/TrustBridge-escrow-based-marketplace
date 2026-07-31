@@ -27,6 +27,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductDto(id));
     }
 
+    @GetMapping("/{id}/purchases")
+    public ResponseEntity<List<com.trustbridge.api.dto.PurchaseHistoryDto>> getProductPurchases(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductPurchases(id));
+    }
+
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto requestDto) {
         ProductResponseDto response = productService.createProduct(requestDto);

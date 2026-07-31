@@ -8,6 +8,8 @@ import com.trustbridge.api.model.Role;
 import com.trustbridge.api.model.User;
 import com.trustbridge.api.repository.ProductRepository;
 import com.trustbridge.api.repository.UserRepository;
+import com.trustbridge.api.repository.EscrowTransactionRepository;
+import com.trustbridge.api.dto.PurchaseHistoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final EscrowTransactionRepository escrowRepository;
 
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -57,6 +60,25 @@ public class ProductService {
         return mapToDto(getProductById(id));
     }
 
+    public List<PurchaseHistoryDto> getProductPurchases(Long productId) {
+        return escrowRepository.findByProductId(productId).stream().map(tx -> {
+            User buyer = tx.getBuyer();
+            UserResponseDto buyerDto = UserResponseDto.builder()
+                    .id(buyer.getId())
+                    .email(buyer.getEmail())
+                    .role(buyer.getRole())
+                    .isVerified(buyer.isVerified())
+                    .build();
+            return PurchaseHistoryDto.builder()
+                    .transactionId(tx.getId())
+                    .buyer(buyerDto)
+                    .amount(tx.getAmount())
+                    .status(tx.getStatus())
+                    .purchasedAt(tx.getCreatedAt())
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
     public ProductResponseDto mapToDto(Product product) {
         User seller = product.getSeller();
         UserResponseDto sellerDto = UserResponseDto.builder()
@@ -66,6 +88,11 @@ public class ProductService {
                 .isVerified(seller.isVerified())
                 .build();
 
+        int count = 0;
+        if (product.getId() != null) {
+            count = escrowRepository.countByProductId(product.getId());
+        }
+
         return ProductResponseDto.builder()
                 .id(product.getId())
                 .title(product.getTitle())
@@ -74,6 +101,7 @@ public class ProductService {
                 .imageUrl(product.getImageUrl())
                 .seller(sellerDto)
                 .active(product.isActive())
+                .purchaseCount(count)
                 .createdAt(product.getCreatedAt())
                 .build();
     }

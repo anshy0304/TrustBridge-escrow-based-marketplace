@@ -15,5 +15,6 @@ public class ProductResponseDto {
     private String imageUrl;
     private UserResponseDto seller;
     private boolean active;
+    private Integer purchaseCount;
     private LocalDateTime createdAt;
 }

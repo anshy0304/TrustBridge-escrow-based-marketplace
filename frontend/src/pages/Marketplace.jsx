@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, Plus } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../components/AuthContext";
+import ProductDetailsModal from "../components/ProductDetailsModal";
 
 export default function Marketplace() {
   const { user } = useAuth();
@@ -10,6 +11,7 @@ export default function Marketplace() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buying, setBuying] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -81,9 +83,14 @@ export default function Marketplace() {
               </div>
               <div className="flex-1 p-4 space-y-2 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-medium text-slate-900">
-                    {product.title}
-                  </h3>
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-medium text-slate-900">
+                      {product.title}
+                    </h3>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {product.purchaseCount || 0} Purchased
+                    </span>
+                  </div>
                   <p className="text-sm text-slate-500 mt-1 line-clamp-2">{product.description}</p>
                 </div>
                 <div>
@@ -107,13 +114,26 @@ export default function Marketplace() {
                     </div>
                   )}
                   <p className="text-xs text-center mt-2 text-slate-400">
-                    Seller is {product.seller.verified ? 'Verified ✓' : 'Unverified'}
+                    Seller is {product.seller.isVerified ? 'Verified ✓' : 'Unverified'}
                   </p>
+                  <button
+                    onClick={() => setSelectedProduct(product)}
+                    className="w-full mt-3 inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50"
+                  >
+                    View Details & History
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {selectedProduct && (
+        <ProductDetailsModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
       )}
     </div>
   );

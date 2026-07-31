@@ -44,11 +44,18 @@ public class EscrowService {
 
         BigDecimal platformFee = requestDto.getAmount().multiply(PLATFORM_FEE_PERCENTAGE);
 
+        Product product = null;
+        if (requestDto.getProductId() != null) {
+            product = productRepository.findById(requestDto.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        }
+
         EscrowTransaction transaction = EscrowTransaction.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
                 .buyer(buyer)
                 .seller(seller)
+                .product(product)
                 .amount(requestDto.getAmount())
                 .platformFee(platformFee)
                 .status(TransactionStatus.PENDING_FUNDING)
@@ -81,6 +88,7 @@ public class EscrowService {
         dto.setAmount(product.getPrice());
         dto.setBuyerId(buyer.getId());
         dto.setSellerId(product.getSeller().getId());
+        dto.setProductId(product.getId());
         
         return createTransaction(dto);
     }

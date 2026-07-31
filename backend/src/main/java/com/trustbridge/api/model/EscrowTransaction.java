@@ -40,6 +40,10 @@ public class EscrowTransaction {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 
