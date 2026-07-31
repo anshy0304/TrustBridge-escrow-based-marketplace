@@ -87,9 +87,11 @@ export default function Marketplace() {
                     <h3 className="text-lg font-medium text-slate-900">
                       {product.title}
                     </h3>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {product.purchaseCount || 0} Purchased
-                    </span>
+                    {product.purchaseCount > 0 && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {product.purchaseCount} Purchased
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-slate-500 mt-1 line-clamp-2">{product.description}</p>
                 </div>
@@ -108,10 +110,6 @@ export default function Marketplace() {
                     >
                       {buying === product.id ? 'Processing...' : 'Buy with Escrow'}
                     </button>
-                  ) : (
-                    <div className="text-center py-2 bg-slate-100 text-slate-500 rounded-md text-sm font-medium border border-slate-200">
-                      Only Buyers can purchase
-                    </div>
                   )}
                   <p className="text-xs text-center mt-2 text-slate-400">
                     Seller is {product.seller.isVerified ? 'Verified ✓' : 'Unverified'}
